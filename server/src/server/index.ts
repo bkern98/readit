@@ -1,16 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const db = require('../db');
-const axios = require('axios');
+import 'dotenv/config';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import db from '../db';
+import axios from 'axios';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post('/signup', async (req, res) => {
+app.post('/signup', async (req: Request, res: Response) => {
   try {
-    const newUser = await db.createUser(req.body.username, req.body.email);
+    await db.createUser(req.body.username, req.body.email);
     res.sendStatus(201);
   } catch (err) {
     console.log('error creating user');
@@ -31,7 +32,7 @@ app.post('/login', async (req, res) => {
 app.get('/search/:term', async (req, res) => {
   try {
     const terms = req.params.term.split(' ').join('+');
-    const { data } = await axios.get(
+    const { data }: { data: any } = await axios.get(
       `https://www.googleapis.com/books/v1/volumes?q=${terms}&printType=books`
     );
     res.send(data.items);
@@ -65,7 +66,7 @@ app.get('/collection/:user', async (req, res) => {
 
 app.post('/collection/:user', async (req, res) => {
   try {
-    const newAdditions = await db.addToCollection(
+    await db.addToCollection(
       req.params.user,
       req.body.book_id,
       req.body.title,
@@ -91,11 +92,7 @@ app.get('/posts/:bookId', async (req, res) => {
 
 app.post('/posts/:bookId', async (req, res) => {
   try {
-    const newPost = await db.writePost(
-      req.params.bookId,
-      req.body.user,
-      req.body.text
-    );
+    await db.writePost(req.params.bookId, req.body.user, req.body.text);
     res.sendStatus(201);
   } catch (err) {
     console.log(err.stack);
