@@ -1,40 +1,31 @@
-import { Pool } from 'pg';
-const pool = new Pool({
-  user: process.env.PG_USER,
-  password: process.env.PG_PASSWORD,
-  database: process.env.PG_DATABASE
-});
+const { Pool } = require('pg');
+const dbConfig = require('../config.js');
+const pool = new Pool(dbConfig);
 
 pool
   .connect()
   .then(() => console.log('Connected to database'))
   .catch(() => console.log('Error connecting to database'));
 
-const createUser = (username: string, email: string) => {
+const createUser = (username, email) => {
   return pool.query('INSERT INTO users VALUES (DEFAULT, $1, $2)', [
     username,
     email
   ]);
 };
 
-const getUser = (email: string) => {
+const getUser = email => {
   return pool.query('SELECT username FROM users WHERE email = $1', [email]);
 };
 
-const getCollection = (username: string) => {
+const getCollection = username => {
   return pool.query(
     'SELECT * FROM users u INNER JOIN collections c ON u.id = c.user_id WHERE u.username = $1',
     [username]
   );
 };
 
-const addToCollection = async (
-  user: string,
-  bookId: string,
-  title: string,
-  author: string,
-  thumbnail: string
-) => {
+const addToCollection = async (user, bookId, title, author, thumbnail) => {
   const userId = await pool.query('SELECT id FROM users WHERE username = $1', [
     user
   ]);
@@ -44,14 +35,14 @@ const addToCollection = async (
   );
 };
 
-const getPosts = (bookId: string) => {
+const getPosts = bookId => {
   return pool.query(
     'SELECT * FROM users u INNER JOIN posts p ON u.id = p.user_id WHERE book_id = $1',
     [bookId]
   );
 };
 
-const writePost = async (bookId: string, user: string, text: string) => {
+const writePost = async (bookId, user, text) => {
   const userId = await pool.query('SELECT id FROM users WHERE username = $1', [
     user
   ]);
@@ -62,7 +53,7 @@ const writePost = async (bookId: string, user: string, text: string) => {
   ]);
 };
 
-export default {
+module.exports = {
   createUser,
   getUser,
   addToCollection,
