@@ -5,11 +5,11 @@ import Copyright from '../src/Copyright';
 
 export default function Index() {
   return (
-    <Container maxWidth='m'>
+    <Container>
       <Box sx={{ my: 4, alignContent: 'center' }}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='h1' sx={{ fontSize: '25vw' }}>
+            <Typography variant='h1' sx={{ fontSize: '20vw' }}>
               Readit.
             </Typography>
           </Grid>
